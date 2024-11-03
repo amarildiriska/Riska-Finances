@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report - Riska's Finance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Financial Report</h1>
+    </header>
+
+    <section class="date-filter">
+        <h2>Filter by Date</h2>
+        <form method="POST" action="{{ url_for('report') }}">
+            <label for="start_date">Start Date:</label>
+            <input type="date" name="start_date">
+            <label for="end_date">End Date:</label>
+            <input type="date" name="end_date">
+            <button type="submit" class="btn">Filter</button>
+        </form>
+    </section>
+
+    <section class="report-summary">
+        <h2>Summary</h2>
+        <p><strong>Total Income:</strong> ${{ income }}</p>
+        <p><strong>Total Expenses:</strong> ${{ expenses }}</p>
+        <p><strong>Profit:</strong> ${{ profit }}</p>
+    </section>
+
+    <section class="report-transactions">
+        <h2>Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>{{ transaction.type.capitalize() }}</td>
+                    <td>${{ transaction.amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <div class="back-button">
+        <a href="{{ url_for('index') }}" class="btn">Back to Dashboard</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Riska's Finance. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

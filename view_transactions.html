@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Transactions - Riska's Finance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>View Transactions</h1>
+    </header>
+
+    <section class="transaction-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>{{ transaction.type.capitalize() }}</td>
+                    <td>${{ transaction.amount }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_transaction', id=transaction.id) }}">Edit</a>
+                        <form action="{{ url_for('delete_transaction', id=transaction.id) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <div class="back-button">
+        <a href="{{ url_for('index') }}" class="btn">Back to Dashboard</a>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Riska's Finance. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

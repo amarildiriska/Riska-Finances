@@ -1,0 +1,145 @@
+/* General Styles */
+body {
+    font-family: Times New Roman, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #33;
+}
+
+header {
+    background-color: #b6d7a8; /* Green */
+    color: white;
+    padding: 15px;
+    text-align: center;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Dashboard Styles */
+.dashboard-summary {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.summary-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    flex: 1;
+    margin: 0 10px;
+}
+
+.dashboard-actions {
+    margin: 20px 0;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+.action-buttons .btn {
+    margin: 10px;
+}
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+/* Form Styles */
+.form-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: white;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Button Styles */
+.btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none; /* For anchor tags */
+}
+
+.btn:hover {
+    background-color: #45a049; /* Darker green */
+}
+
+/* Responsive Styles */
+@media (max-width: 600px) {
+    .dashboard-summary {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .summary-card {
+        margin-bottom: 20px;
+        width: 90%; /* Adjust width for smaller screens */
+    }
+
+    .action-buttons {
+        flex-direction: column; /* Stack buttons on smaller screens */
+        align-items: center;
+    }
+
+    .action-buttons .btn {
+        width: 90%; /* Full-width buttons on mobile */
+        margin-bottom: 10px; /* Space between buttons */
+    }
+
+    /* Adjust table styles */
+    table {
+        font-size: 14px; /* Slightly smaller font for better fit */
+    }
+
+    th, td {
+        padding: 8px; /* Reduced padding for smaller screens */
+    }
+}

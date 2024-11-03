@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Transaction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Add Transaction</h1>
+    </header>
+
+    <main>
+        <div class="form-container">
+            <form method="POST" action="{{ url_for('add_transaction') }}">
+                <label for="date">Date:</label>
+                <input type="date" name="date" required>
+
+                <label for="description">Description:</label>
+                <input type="text" name="description" required>
+
+                <label for="type">Type:</label>
+                <select name="type" required>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+
+                <label for="amount">Amount:</label>
+                <input type="number" step="0.01" name="amount" required>
+
+                <button type="submit" class="btn">Add Transaction</button>
+            </form>
+
+            <div class="back-button">
+                <a href="{{ url_for('index') }}" class="btn">Back to Dashboard</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Riska's Finance. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Riska's Finance</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* CSS to make the logo smaller */
+        #logo {
+            max-width: 200px; /* Adjust this value for desired logo size */
+            height: auto;
+            display: block;
+            margin: 0 auto; /* Center the logo */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="{{ url_for('static', filename='my_logo.png') }}" alt="Riska's Finance Logo" id="logo">
+        <h1>Welcome to Riska's Finance</h1>
+    </header>
+
+    <section class="dashboard-summary">
+        <div class="summary-card">
+            <h2>Total Income</h2>
+            <p>${{ income }}</p>
+        </div>
+        <div class="summary-card">
+            <h2>Total Expenses</h2>
+            <p>${{ expenses }}</p>
+        </div>
+        <div class="summary-card">
+            <h2>Profit</h2>
+            <p>${{ profit }}</p>
+        </div>
+    </section>
+
+    <section class="dashboard-actions">
+        <h2>Quick Actions</h2>
+        <div class="action-buttons">
+            <a href="{{ url_for('add_transaction') }}" class="btn">Add Transaction</a>
+            <a href="{{ url_for('view_transactions') }}" class="btn">View Transactions</a>
+            <a href="{{ url_for('add_customer') }}" class="btn">Add Customer</a>
+            <a href="{{ url_for('view_customers') }}" class="btn">View Customers</a>
+            <a href="{{ url_for('report') }}" class="btn">View Reports</a> <!-- New Reports Button -->
+        </div>
+    </section>
+
+    <section class="recent-transactions">
+        <h2>Recent Transactions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date.strftime('%Y-%m-%d') }}</td>
+                    <td>{{ transaction.description }}</td>
+                    <td>{{ transaction.type.capitalize() }}</td>
+                    <td>${{ transaction.amount }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_transaction', id=transaction.id) }}">Edit</a>
+                        <form action="{{ url_for('delete_transaction', id=transaction.id) }}" method="POST" style="display:inline;">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Riska's Finance. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
