@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riska's Finance - Invoice Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #f0f2f5;
+      margin: 0;
+    }
+    .container {
+      width: 90%;
+      max-width: 800px;
+      margin-top: 20px;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    header {
+      text-align: center;
+      color: #2d6a4f;
+    }
+    .form input, .form select, .form button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .transactions ul {
+      list-style: none;
+      padding: 0;
+    }
+    .transactions li {
+      padding: 10px;
+      border: 1px solid #ddd;
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      background-color: #ffffff;
+      border-radius: 5px;
+    }
+    .invoice-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .print-btn, .email-btn, .edit-btn, .delete-btn, .mark-paid-btn {
+      padding: 10px;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .print-btn { background-color: #2d6a4f; }
+    .email-btn { background-color: #ff8800; }
+    .edit-btn { background-color: #007bff; }
+    .delete-btn { background-color: #d9534f; }
+    .mark-paid-btn { background-color: #5cb85c; }
+    .paid { text-decoration: line-through; color: #5cb85c; }
+    .search-input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Riska's Finance - Invoice Tracker</h1>
+    <p>Create, Print, and Email your invoices with ease</p>
+  </header>
+
+  <section class="form">
+    <h2>Create or Edit Invoice</h2>
+    <input type="text" id="customerName" placeholder="Customer Name">
+    <input type="date" id="dueDate" placeholder="Due Date">
+    <input type="text" id="description" placeholder="Item Description">
+    <input type="number" id="quantity" placeholder="Quantity" min="1" value="1">
+    <input type="number" id="rate" placeholder="Rate" min="0">
+    <button onclick="createOrUpdateInvoice()">Save Invoice</button>
+  </section>
+
+  <section class="search">
+    <input type="text" class="search-input" id="searchInvoiceNumber" placeholder="Search by Invoice Number" oninput="searchInvoice()">
+  </section>
+
+  <section class="transactions">
+    <h2>Invoices</h2>
+    <ul id="invoice-list"></ul>
+  </section>
+</div>
+
+<script>
+  let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+  let editInvoiceId = null;
+
+  function generateInvoiceNumber() {
+    return invoices.length > 0 ? Math.max(...invoices.map(inv => inv.invoiceNumber)) + 1 : 1001;
+  }
+
+  function saveInvoices() {
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+  }
+
+  function createOrUpdateInvoice() {
+    const customerName = document.getElementById('customerName').value;
+    const dueDate = document.getElementById('dueDate').value;
+    const description = document.getElementById('description').value;
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const rate = parseFloat(document.getElementById('rate').value);
+    const amount = (quantity * rate).toFixed(2);
+
+    if (editInvoiceId === null) {
+      const newInvoice = {
+        id: invoices.length,
+        invoiceNumber: generateInvoiceNumber(),
+        customerName,
+        dueDate,
+        description,
+        quantity,
+        rate,
+        amount,
+        paid: false
+      };
+      invoices.push(newInvoice);
+    } else {
+      const invoice = invoices.find(inv => inv.id === editInvoiceId);
+      invoice.customerName = customerName;
+      invoice.dueDate = dueDate;
+      invoice.description = description;
+      invoice.quantity = quantity;
+      invoice.rate = rate;
+      invoice.amount = amount;
+      editInvoiceId = null;
+    }
+
+    saveInvoices();
+    updateInvoiceList();
+    resetForm();
+  }
+
+  function resetForm() {
+    document.getElementById('customerName').value = '';
+    document.getElementById('dueDate').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('quantity').value = 1;
+    document.getElementById('rate').value = '';
+  }
+
+  function updateInvoiceList(filteredInvoices = invoices) {
+    const invoiceList = document.getElementById('invoice-list');
+    invoiceList.innerHTML = '';
+
+    filteredInvoices.forEach(invoice => {
+      const invoiceItem = document.createElement('li');
+      invoiceItem.className = invoice.paid ? 'paid' : '';
+      invoiceItem.innerHTML = `
+        <span>Invoice #${invoice.invoiceNumber} - ${invoice.customerName}: $${invoice.amount} (Due: ${invoice.dueDate})</span>
+        <div class="invoice-controls">
+          <button class="mark-paid-btn" onclick="markAsPaid(${invoice.id})">${invoice.paid ? 'Paid' : 'Mark as Paid'}</button>
+          <button class="print-btn" onclick="printInvoice(${invoice.id})">Print</button>
+          <button class="email-btn" onclick="emailInvoice(${invoice.id})">Email</button>
+          <button class="edit-btn" onclick="editInvoice(${invoice.id})">Edit</button>
+          <button class="delete-btn" onclick="deleteInvoice(${invoice.id})">Delete</button>
+        </div>
+      `;
+      invoiceList.appendChild(invoiceItem);
+    });
+  }
+
+  function editInvoice(id) {
+    const invoice = invoices.find(inv => inv.id === id);
+    document.getElementById('customerName').value = invoice.customerName;
+    document.getElementById('dueDate').value = invoice.dueDate;
+    document.getElementById('description').value = invoice.description;
+    document.getElementById('quantity').value = invoice.quantity;
+    document.getElementById('rate').value = invoice.rate;
+    editInvoiceId = id;
+  }
+
+  function deleteInvoice(id) {
+    invoices = invoices.filter(inv => inv.id !== id);
+    saveInvoices();
+    updateInvoiceList();
+  }
+
+  function markAsPaid(id) {
+    const invoice = invoices.find(inv => inv.id === id);
+    invoice.paid = !invoice.paid;
+    saveInvoices();
+    updateInvoiceList();
+  }
+
+  function printInvoice(id) {
+    const invoice = invoices.find(inv => inv.id === id);
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>Invoice #${invoice.invoiceNumber} for ${invoice.customerName}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; color: #333; }
+            h1, h2 { color: #2d6a4f; }
+            .header { text-align: center; }
+            .header h1 { font-size: 24px; margin: 0; }
+            .header p { font-size: 16px; margin: 5px 0; color: #555; }
+            .line { width: 100%; border-top: 1px solid #ddd; margin: 10px 0; }
+            .details-row { display: flex; justify-content: space-between; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>Riska's Finance</h1>
+            <p>Address: 614 Crawford Ave, Dixon, IL 61021</p>
+          </div>
+          <div class="line"></div>
+          <h2>Invoice #${invoice.invoiceNumber} for ${invoice.customerName}</h2>
+          <div class="line"></div>
+          <div class="details-row">
+            <p><strong>Due Date:</strong> ${invoice.dueDate}</p>
+            <p><strong>Total Amount:</strong> $${invoice.amount}</p>
+          </div>
+          <p><strong>Description:</strong> ${invoice.description}</p>
+          <p><strong>Quantity:</strong> ${invoice.quantity} | <strong>Rate:</strong> $${invoice.rate}</p>
+          <div class="line"></div>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
+  function emailInvoice(id) {
+    const invoice = invoices.find(inv => inv.id === id);
+    alert(`Invoice #${invoice.invoiceNumber} for ${invoice.customerName} emailed!`);
+  }
+
+  function searchInvoice() {
+    const searchValue = document.getElementById('searchInvoiceNumber').value;
+    const filteredInvoices = invoices.filter(inv =>
+      inv.invoiceNumber.toString().includes(searchValue)
+    );
+    updateInvoiceList(filteredInvoices);
+  }
+
+  window.onload = updateInvoiceList;
+</script>
+
+</body>
+</html>
